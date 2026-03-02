@@ -11,7 +11,9 @@ export default async function handler(req, res) {
     const { record } = req.body;
 
     // Solo procesar propiedades verificadas y activas
-    if (!record?.verificado || !record?.activo) {
+    const verificado = record?.verificado === true || record?.verificado === 'true';
+    const activo = record?.activo === true || record?.activo === 'true';
+    if (!verificado || !activo) {
       return res.status(200).json({ message: 'Not verified or active' });
     }
 
