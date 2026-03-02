@@ -39,16 +39,8 @@ export default async function handler(req, res) {
     }
 
     // Filtrar alertas que coincidan
-    const coincidentes = alertas.filter(alerta => {
-      if (alerta.ciudad && alerta.ciudad !== ciudad) return false;
-      if (alerta.tipo && alerta.tipo !== tipo) return false;
-      if (alerta.precio_max && precio > alerta.precio_max) return false;
-      if (alerta.habitaciones_min && habitaciones < alerta.habitaciones_min) return false;
-      if (alerta.sin_garante && requisitos?.garante !== 'no') return false;
-      if (alerta.sin_garantia && requisitos?.garantia !== 'no') return false;
-      if (alerta.mascotas && acepta_mascotas !== 'si') return false;
-      return true;
-    });
+    // Filtrar alertas que coincidan por ciudad
+    const coincidentes = alertas.filter(alerta => alerta.ciudad === ciudad);
 
     if (coincidentes.length === 0) {
       return res.status(200).json({ message: 'No matching alerts' });
