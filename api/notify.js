@@ -18,6 +18,9 @@ export default async function handler(req, res) {
     const activo = record?.activo;
     const activoAnterior = old_record?.activo;
 
+    // URL base de la app (produccion). Cambiar por el dominio propio cuando se registre.
+    const APP_URL = 'https://trato-directo-orpin.vercel.app';
+
     let asunto = '';
     let mensajeHtml = '';
     let notificar = false;
@@ -39,12 +42,12 @@ export default async function handler(req, res) {
               <h2 style="color: #1e293b; margin: 0 0 8px 0; font-size: 18px;">${titulo}</h2>
               <p style="color: #64748b; margin: 0;">📍 ${ciudad}</p>
             </div>
-            <a href="https://alquipy-pwa-developm-r2cs.bolt.host/#propiedad/${propiedadId}" 
+            <a href="${APP_URL}/#propiedad/${propiedadId}" 
                style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
               Ver propiedad →
             </a>
             <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">
-              Recibiste este email porque te anotaste en la lista de espera de Alquilá.PY.
+              Recibiste este email porque te anotaste en la lista de espera de Trato Directo.
             </p>
           </div>
         </div>
@@ -76,12 +79,12 @@ export default async function handler(req, res) {
               </div>
               <p style="color: #16a34a; font-size: 13px; margin: 4px 0 0 0;">¡Ahorrás ${baja.toLocaleString()} Gs por mes!</p>
             </div>
-            <a href="https://alquipy-pwa-developm-r2cs.bolt.host/#propiedad/${propiedadId}" 
+            <a href="${APP_URL}/#propiedad/${propiedadId}" 
                style="display: inline-block; background: #16a34a; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
               Ver propiedad →
             </a>
             <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">
-              Recibiste este email porque te anotaste en la lista de espera de Alquilá.PY.
+              Recibiste este email porque te anotaste en la lista de espera de Trato Directo.
             </p>
           </div>
         </div>
@@ -107,6 +110,7 @@ export default async function handler(req, res) {
 
     const interesados = await listaResponse.json();
     const emails = (interesados || []).map(i => i.email).filter(Boolean);
+    // Copia al admin para monitorear que el sistema funciona (quitar en produccion madura)
     emails.push('luichivelazquez@gmail.com');
 
     const emailResponse = await fetch('https://api.resend.com/emails', {
@@ -116,7 +120,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Alquilá.PY <onboarding@resend.dev>',
+        from: 'Trato Directo <onboarding@resend.dev>',
         to: emails,
         subject: asunto,
         html: mensajeHtml,
