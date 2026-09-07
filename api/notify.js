@@ -9,7 +9,6 @@ export default async function handler(req, res) {
 
   try {
     const { record, old_record } = req.body;
-    console.log('DIAG 1 - body recibido:', JSON.stringify({ tiene_record: !!record, tiene_old_record: !!old_record, precio: record?.precio, precioAnterior: old_record?.precio, activo: record?.activo, activoAnterior: old_record?.activo }));
 
     const propiedadId = record?.id;
     const titulo = record?.titulo || 'Propiedad';
@@ -92,9 +91,7 @@ export default async function handler(req, res) {
       `;
     }
 
-    console.log('DIAG 2 - notificar:', notificar, '| asunto:', asunto);
     if (!notificar) {
-      console.log('DIAG 2b - NO se notifica (condiciones no cumplidas)');
       return res.status(200).json({ message: 'No notification needed' });
     }
 
@@ -113,7 +110,6 @@ export default async function handler(req, res) {
 
     const interesados = await listaResponse.json();
     const emails = (interesados || []).map(i => i.email).filter(Boolean);
-    console.log('DIAG 3 - emails de lista_espera encontrados:', JSON.stringify(interesados), '| emails:', emails.length);
     // Copia al admin para monitorear que el sistema funciona (quitar en produccion madura)
     emails.push('luichivelazquez@gmail.com');
 
@@ -131,10 +127,9 @@ export default async function handler(req, res) {
       }),
     });
 
-    const resendResult = await emailResponse.json();
-    console.log('DIAG 4 - respuesta Resend:', emailResponse.status, JSON.stringify(resendResult));
     if (!emailResponse.ok) {
-      throw new Error(JSON.stringify(resendResult));
+      const err = await emailResponse.json();
+      throw new Error(JSON.stringify(err));
     }
 
     return res.status(200).json({ success: true, notificados: emails.length });
